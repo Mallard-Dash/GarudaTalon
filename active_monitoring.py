@@ -1,6 +1,17 @@
 #Active monitoring
 
-#Start monitoring
+###############################
+###THIS FILE IS NOT IN USE!####
+###############################
+###########################
+#######################
+###################
+###############
+###########
+########
+####
+##
+#
 import time
 import psutil
 import subprocess
@@ -48,11 +59,10 @@ def display_usage3():
 
 
 def monitor_func():
-        # skriv ut 3 tomma rader först
+
     print("\n\n\n")
 try:
     while True:
-            # flytta markören upp 3 rader
             print("\033[F\033[F\033[F", end="")
             display_usage2()
             time.sleep(0.2)

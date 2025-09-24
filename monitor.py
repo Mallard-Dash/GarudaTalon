@@ -3,17 +3,15 @@ import threading
 import psutil
 import time
 
-# --- Globalt state (enkelt & tydligt) ---
 _MONITOR_THREAD = None
 _STOP_EVENT = threading.Event()
-_LATEST = {}  # fylls av bakgrundsloopen
+_LATEST = {} 
 
 def _collect_loop(interval=1.0, disk_path="/"):
-    # Initiera första mätningen så inte första CPU blir 0
     psutil.cpu_percent(interval=None)
 
     while not _STOP_EVENT.is_set():
-        cpu = psutil.cpu_percent(interval=interval)  # blockar 'interval' sekunder
+        cpu = psutil.cpu_percent(interval=interval) 
         vm  = psutil.virtual_memory()
         du  = psutil.disk_usage(disk_path)
 
@@ -28,7 +26,6 @@ def _collect_loop(interval=1.0, disk_path="/"):
         })
 
 def start_monitoring(interval=1.0, disk_path="/"):
-    """Starta övervakning (gör inget om den redan är igång)."""
     global _MONITOR_THREAD
     if is_monitoring_active():
         return False
@@ -40,7 +37,6 @@ def start_monitoring(interval=1.0, disk_path="/"):
     return True
 
 def stop_monitoring():
-    """Stoppa övervakningen om den är igång."""
     global _MONITOR_THREAD
     if not is_monitoring_active():
         return False
@@ -50,23 +46,38 @@ def stop_monitoring():
     return True
 
 def is_monitoring_active():
-    """True om bakgrundstråden kör."""
     return _MONITOR_THREAD is not None and _MONITOR_THREAD.is_alive()
 
 def get_status():
-    """Returnera senaste mätningen (dict) eller None om inte aktiv."""
     if not is_monitoring_active():
         return None
     return dict(_LATEST)
 
+def display_usage2():
+    disk = psutil.disk_usage('/')
+    ram  = psutil.virtual_memory()
+    cpu  = psutil.cpu_percent(interval=0.5)
+
+    total_disk_gb = disk.total / (1024**3)
+    used_disk_gb  = disk.used / (1024**3)
+
+    total_ram_gb = ram.total / (1024**3)
+    used_ram_gb  = (ram.total - ram.available) / (1024**3)
+
+    print(f"Disk-usage: {disk.percent}%  ({used_disk_gb:.0f}/{total_disk_gb:.0f} GB used)")
+    print(f"RAM-usage:  {ram.percent}%  ({used_ram_gb:.0f}/{total_ram_gb:.0f} GB used)")
+    print(f"CPU-usage:  {cpu:.0f}%  ")
+
 def show_active_monitoring():
     if not is_monitoring_active():
-        print("Ingen övervakning är aktiv.")
-    else:
-        s = get_status()
-        print(f"CPU Användning: {s['cpu_percent']:.0f}%")
-        print(f"Minnesanvändning: {s['ram_percent']:.0f}% "
-              f"({s['ram_used_gb']:.1f} GB out of {s['ram_total_gb']:.1f} GB used)")
-        print(f"Diskanvändning: {s['disk_percent']:.0f}% "
-              f"({s['disk_used_gb']:.0f} GB out of {s['disk_total_gb']:.0f} GB used)")
-    input("\nTryck Enter för att gå tillbaka till huvudmenyn...")
+        print("No active monitoring.")
+    else:           
+        print("\n\n\n")
+    try:
+        while True:
+            print("\033[F\033[F\033[F", end="")
+            display_usage2()
+            time.sleep(0.2)
+    except KeyboardInterrupt:
+            print("\n--- Exiting to main-menu ---")
+            return
