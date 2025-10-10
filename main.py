@@ -15,16 +15,14 @@ from stored_alarms import load_alarms, list_alarms_human
 
 class GarudaTalonApp:
     def __init__(self):
-        # --- App dirs & log ---
         self.APP_DIR = os.path.join(os.getcwd(), "data")
         os.makedirs(self.APP_DIR, exist_ok=True)
         self.LOG_FILE = self._new_logfile_path()
 
-        # --- Alarms-instans (hålls inom app-klassen) ---
+
         self.alarms = Alarms(soundfile="alert.wav", poll_s=0.5)
         self.alarms.sync_enabled_flags_from_storage()
 
-        # --- Startlogg + visa ev. sparade larm ---
         self.log_event("Program_started")
 
         loaded = load_alarms()
@@ -107,7 +105,7 @@ class GarudaTalonApp:
 
             elif choice == "4":
                 self.log_event("Alarm_menu_opened")
-                self.alarms.alarm_menu()  # <- anropa instansens meny
+                self.alarms.alarm_menu()  
 
             elif choice == "5":
                 self.log_event("Show_alarms")
@@ -144,7 +142,6 @@ class GarudaTalonApp:
         try:
             self.mainmenu()
         finally:
-            # säkerställ att alarmtråden inte lämnas hängande
             self.alarms.stop_alarm_watcher()
 
 
