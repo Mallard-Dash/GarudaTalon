@@ -8,7 +8,10 @@ init(autoreset=True)
 
 from stored_alarms import load_alarms, add_alarm, remove_alarm_by_index, list_alarms_human
 
-soundfile = "Alarm_sound.mp3"
+import os
+BASE_DIR  = os.path.dirname(os.path.abspath(__file__))
+soundfile = os.path.join(BASE_DIR, "alert.wav")
+
 
 # Arm state per kind
 ON   = {"cpu": False, "ram": False, "disk": False}
@@ -171,3 +174,16 @@ def stop_alarm_watcher():
     _ALARM_THREAD.join(timeout=2)
     _ALARM_THREAD = None
     return True
+
+def sync_enabled_flags_from_storage():
+    """Enable ON[kind] if there exists any enabled alarm of that kind in storage."""
+    try:
+        data = load_alarms()
+        kinds_enabled = {a["kind"] for a in data if a.get("enabled", True)}
+        for k in ("cpu", "ram", "disk"):
+            ON[k] = (k in kinds_enabled)
+    except Exception:
+        for k in ("cpu", "ram", "disk"):
+            ON[k] = False
+
+
