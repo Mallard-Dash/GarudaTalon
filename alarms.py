@@ -8,10 +8,6 @@ init(autoreset=True)
 
 from stored_alarms import load_alarms, add_alarm, remove_alarm_by_index, list_alarms_human
 
-import os
-BASE_DIR  = os.path.dirname(os.path.abspath(__file__))
-soundfile = os.path.join(BASE_DIR, "alert.wav")
-
 
 # Arm state per kind
 ON   = {"cpu": False, "ram": False, "disk": False}
