@@ -7,7 +7,7 @@ from colorama import Fore, init
 init(autoreset=True)
 
 from stored_alarms import load_alarms, add_alarm, remove_alarm_by_index, list_alarms_human
-
+soundfile = ("alert.wav")
 
 # Arm state per kind
 ON   = {"cpu": False, "ram": False, "disk": False}
