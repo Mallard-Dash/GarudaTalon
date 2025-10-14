@@ -1,0 +1,91 @@
+Systemutveckling i Python – Slutuppgift
+
+Deadline:
+- Inlämning av kod (GitHub-länk) och rapport (PDF): 24/10
+- Presentationer: 27/9 + 29/9 (bokas)
+
+------------------------------------------------------------
+Syfte:
+Skriv en övervakningsapplikation i Python som hämtar information från
+operativsystemet (CPU-, minnes- och diskanvändning) och presenterar den i konsolen.
+
+------------------------------------------------------------
+Funktionella krav (G-nivå):
+
+1. Programmet startar och visar fem menyval:
+   - Starta övervakning
+   - Lista aktiv övervakning
+   - Skapa larm
+   - Visa larm
+   - Starta övervakningsläge
+
+2. Ingen övervakning får starta automatiskt vid programstart.
+
+3. “Starta övervakning”:
+   - Aktiverar övervakning av CPU, minne och disk.
+
+4. “Lista aktiv övervakning”:
+   - Visar aktuell status i procent och GB.
+   - Om ingen övervakning är aktiv visas info om detta.
+   - Efter visning: tryck valfri tangent för att återgå till huvudmenyn.
+
+5. “Skapa larm”:
+   - Undermeny: CPU, minne, disk, tillbaka till huvudmeny.
+   - Användaren ställer in procentnivå (1–100).
+   - Felaktig inmatning ska ge felmeddelande.
+   - Bekräftelse visas efter att larm skapats.
+
+6. “Visa larm”:
+   - Visar alla konfigurerade larm sorterade efter typ.
+   - Möjlighet till flera larm av samma typ.
+   - Efter visning: tryck valfri tangent för att återgå till huvudmenyn.
+
+7. “Starta övervakningsläge”:
+   - Programmet loopar och meddelar att övervakning är aktiv.
+   - Tryck valfri tangent för att återgå till menyn.
+   - Om ett larm triggas skrivs varning ut i konsolen.
+
+------------------------------------------------------------
+Icke-funktionella krav (G-nivå):
+- Programmet ska bestå av flera filer.
+- Objekt och funktioner ska användas där det passar.
+- Minst ett ställe med funktionell programmering (t.ex. sortering).
+- Koden ska vara välskriven, strukturerad och kommenterad.
+- Programmet ska klara felaktig input utan att krascha.
+- All funktionalitet ska fungera korrekt.
+
+------------------------------------------------------------
+Ytterligare krav (VG-nivå):
+
+1. Loggning:
+   - Alla händelser loggas (programstart, input, konfigurationer, larm).
+   - Format: Datum_Tid_Loggtext.
+   - Exempel:
+     20/9/2024_15:05_CPU_Användningslarm_Konfigurerat_80_Procent
+     20/9/2024_15:09_Övervakningsläge_startat
+     20/9/2024_15:16_CPU_Användningslarm_aktiverat_80_Procent
+   - Ny loggfil skapas vid varje programstart med tidsstämpel i filnamnet.
+
+2. Ta bort larm:
+   - Lista alla befintliga larm.
+   - Användaren väljer ett larm att ta bort via siffra.
+   - Efter borttagning återgår man till huvudmenyn.
+
+3. Larm ska sparas till fil (JSON).
+   - Tidigare konfigurerade larm laddas vid programstart.
+   - Meddelande visas: “loading previously configured alarms...”
+   - Vid visning ska både gamla och nya larm visas.
+
+4. Endast närmaste larmnivå ska triggas vid flera larm av samma typ.
+
+------------------------------------------------------------
+Icke-funktionella krav (VG-nivå):
+- Mycket välskriven, tydlig och strukturerad kod.
+- Lättlästa loggfiler med konsekvent format.
+- Dynamisk loggfil baserad på datum och tid.
+
+------------------------------------------------------------
+Valfria tillägg (extra plus):
+- Skicka e-post vid aktiverade larm (t.ex. via SendGrid).
+- Versionshantera utvecklingen på GitHub med feature branches.
+- Skapa enkelt grafiskt gränssnitt som visar aktiva larm och nivåer i realtid.
