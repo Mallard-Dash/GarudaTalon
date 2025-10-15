@@ -17,6 +17,10 @@ class App():
         self.monitoring = monitoring
         self.User_alarms = User_alarms()
 
+    def event_logger():
+    #Kalla på en ny json-fil som loggar alla kommandon i programmet och lagrar detta som en logg här
+        pass
+
 
     def ask_start_monitoring(self):
         if self.monitoring == False:
@@ -106,8 +110,9 @@ class App():
             else:
                 print ("Please enter a valid menu choice number from 1-5: ")
 
-def main():
-    test= App()
+
+test= App()
+
 
 if __name__ == "__main__":
     test.show_main_menu()
