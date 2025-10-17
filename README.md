@@ -1,79 +1,67 @@
-# GarudaTalon – System Monitoring (CLI)
+GarudaTalon System Monitor
+GarudaTalon is a lightweight, terminal-based system resource monitor written in Python. It allows you to track CPU, RAM, and disk usage in real-time and configure custom alarms that trigger when usage exceeds a specified threshold.
 
-A small, menu-driven system monitor in Python. It collects CPU, memory, and disk stats, lets you configure multiple alarms per category, and shows a live “monitoring mode” where alarms can trigger.
+Features
+Live Resource Monitoring: Get a real-time overview of your CPU, RAM, and Disk usage directly in your terminal.
 
-## Features
+Configurable Alarms: Easily add, view, and remove alarms based on percentage thresholds for each system resource.
 
-* Start/stop background monitoring (CPU/RAM/Disk)
-* **List Active Monitoring**: snapshot of current usage
-* **Configure Alarms**: multiple thresholds per type (CPU/RAM/Disk)
-* **Show Alarms**: sorted, human-readable list
-* **Monitoring Mode**: live view; alarms trigger here only
-* JSON persistence of alarms (`data/alarms.json`)
-* Per-run log file (`data/system-monitor-YYYYMMDD-HHMMSS.log`)
+Persistent Configuration: Your alarm settings are saved in an active_alarms.json file and automatically loaded every time you start the application.
 
-## Requirements
+Session-Based Logging: Each session creates a unique, timestamped log file (.jsonl format) to record user actions and triggered alarms.
 
-* Python 3.10+ (recommended)
-* Dependencies:
+Interactive CLI: A simple and intuitive command-line menu for easy navigation and control.
 
-  ```bash
-  pip install psutil pygame colorama
-  ```
+Colored Output: Uses colorama for a more readable and visually appealing interface.
 
-> Note: On some systems, `pygame` may require SDL libraries (Linux) or extra permissions (macOS). If sound fails, alarms will still print to the console.
+Installation & Usage
+Prerequisites
+Python 3.8 or newer.
 
-## Project Structure
+pip (Python package installer).
 
-```
-.
-├─ main.py              # CLI entrypoint (menus & logging)
-├─ monitor.py           # background sampler & snapshot/live view
-├─ alarms.py            # alarm config, checks, and monitoring-mode watcher
-├─ stored_alarms.py     # JSON persistence helpers
-└─ data/                # logs and alarms.json (created at runtime)
-```
+1. Clone the Repository
+First, clone this repository to your local machine.
 
-## Usage
+Bash
 
-1. Clone and install deps:
+git clone <your-repository-url>
+cd GarudaTalon
+2. Create a requirements.txt file
+Create a file named requirements.txt in the project's root directory and add the following lines to it:
 
-   ```bash
-   git clone <your-repo-url>
-   cd <repo>
-   pip install -r requirements.txt  # if you add one, otherwise see above
-   ```
-2. Run:
+Plaintext
 
-   ```bash
-   python main.py
-   ```
+psutil
+colorama
+3. Install Dependencies
+Install the required Python libraries using the requirements.txt file.
 
-### Menu (overview)
+Bash
 
-1. **START MONITORING** – starts background sampling (needed for snapshots).
-2. **STOP MONITORING** – stops background sampling.
-3. **LIST ACTIVE MONITORING** – prints a **snapshot** (if monitoring is active), then waits for Enter.
-4. **CONFIGURE ALARMS** – set thresholds (1–100) for CPU/RAM/Disk; multiple per type are allowed.
-5. **SHOW ALARMS** – lists all configured alarms (sorted), then waits for Enter.
-6. **START MONITORING MODE** – live view; **alarms can trigger here** (sound + console). Press `Ctrl+C` to return.
-7. **EXIT PROGRAM** – quit.
+pip install -r requirements.txt
+4. Run the Application
+Start the program by running the main.py script.
 
-### Alarm Behavior (important)
+Bash
 
-* Alarms are **only evaluated** during **Monitoring Mode** (menu option 6).
-* Multiple thresholds per type are supported; the **highest threshold ≤ current value** is considered the active trigger (avoids spamming lower ones).
-* Alarms are stored in `data/alarms.json` and loaded at startup.
+python main.py
+You will be greeted by the main menu, where you can start monitoring, configure alarms, or view the live overview.
 
-## Logs
+How It Works
+The application is split into three main logical components:
 
-* A new log file is created each run: `data/system-monitor-YYYYMMDD-HHMMSS.log`.
-* Events like program start, menu choices, and configuration changes are appended.
+main.py: This is the main entry point of the application. It handles the user menu, the main monitoring loop, and coordinates the other modules.
 
-## Troubleshooting
+configurations.py: This module manages all aspects of the alarms. It handles creating, saving, loading, removing, and checking alarm thresholds against current system values.
 
-* **No sound?** Check that `pygame.mixer` can initialize; verify audio output device. The app will still print alarm warnings if audio fails.
-* **No snapshot in option 3?** Make sure you started monitoring first (option 1).
-* **High CPU flapping alarms?** Consider adding hysteresis or consecutive-hit logic (easy to drop in if needed).
+metric_data.py: This module is responsible for fetching the raw system resource data (CPU, RAM, Disk) using the psutil library.
+
+File Generation
+When you run the program, it will create two types of files in the project directory:
+
+active_alarms.json: A single file that stores all your alarm configurations. This file persists between sessions.
+
+log_YYYY-MM-DD_HH-MM-SS.jsonl: A new log file is created for each session you start. It records menu choices, actions, and any alarms that are triggered.
 
 © 2025 Mallard-Dash. All rights reserved.
