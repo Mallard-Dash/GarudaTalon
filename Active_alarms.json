@@ -1,0 +1,18 @@
+[
+  {
+    "Name": "CPU",
+    "Threshold": 15
+  },
+  {
+    "Name": "RAM",
+    "Threshold": 30
+  },
+  {
+    "Name": "CPU",
+    "Threshold": 5
+  },
+  {
+    "Name": "CPU",
+    "Threshold": 6
+  }
+]

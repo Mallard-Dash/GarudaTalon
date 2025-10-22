@@ -10,14 +10,14 @@ from metric_data import Sensors
 from pathlib import Path
 import json
 from datetime import datetime
-init(autoreset=True)
+init(autoreset=True) #Colorama resets everytime so not every code gets one color
 BASE_DIR = Path(__file__).resolve().parent
 session_timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
 log_filename = f"log_{session_timestamp}.jsonl" #Timestamp for the log-files
 
 LOG_FILE_PATH = BASE_DIR / log_filename
-class Main(): #Main-class
+class Main(): 
     def __init__(self, name=None):
         self.name = name
         self.sensors = Sensors()
@@ -67,19 +67,19 @@ class Main(): #Main-class
         self.event_logger("User opened live monitoring view")
         try:
             while True:
+                
                 # 1. Get current data
                 cpu_percent, cpu_display = self.sensors.cpu_data()
                 ram_percent, ram_display = self.sensors.ram_data()
                 disk_percent, disk_display = self.sensors.disk_data()
 
-                # 2. Check for triggered alarms
-                self.user_alarms.check_alarms(cpu_percent, ram_percent, disk_percent)
-
-                # 3. Display the live data
+                # 2. Display the live data
                 display_string = f"\r {cpu_display} {ram_display} {disk_display} \r"
                 print(display_string, end="", flush=True)
+                time.sleep(1.5)
 
-                time.sleep(1)
+                self.user_alarms.check_alarms(cpu_percent, ram_percent, disk_percent)
+
         except KeyboardInterrupt:
             print("\nReturning to main menu.")
             self.event_logger("User closed live monitoring view")

@@ -87,7 +87,7 @@ class User_alarms():
         # Sort the list of alarms alphabetically by the 'Name' key
         sorted_alarms = sorted(alarms, key=lambda alarm: alarm['Name'])
 
-        # Now, iterate over the newly sorted list
+        # Iterate over the newly sorted list
         for alarm in sorted_alarms:
             print(f"- {alarm['Name']} is set to {alarm['Threshold']}%")
 
@@ -116,7 +116,6 @@ class User_alarms():
     def check_alarms(self, cpu_val, ram_val, disk_val):
         """This function checks current values against saved alarms."""
         active_alarms = self._load_alarms()
-
         for alarm in active_alarms:
             value_to_check = 0
             name = alarm["Name"]
@@ -128,9 +127,9 @@ class User_alarms():
                 value_to_check = ram_val
             elif name == "DISK":
                 value_to_check = disk_val
-
             if value_to_check >= threshold:
+                time.sleep(3)
                 # Print the warning on a new line to not interfere with the monitoring line
+
                 print("\n" + Fore.RED + f"!!! ALARM !!! {name} ({value_to_check:.1f}%) has exceeded the threshold of {threshold}%")
                 self.event_logger(log=f"Alarm triggered for {name} at {threshold}%")
-                time.sleep(3)

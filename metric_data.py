@@ -16,7 +16,7 @@ class Sensors():
             - float: The raw percentage (e.g., 15.4) for alarm checking.
             - str: A formatted string for display.
         """
-        # Using interval=None makes the call non-blocking, which is better for a responsive loop.
+        # Using interval=None makes the call non-blocking
         cpu_percent = psutil.cpu_percent(interval=None)
         display_str = f"CPU at {cpu_percent:.1f}% |"
         return cpu_percent, display_str
