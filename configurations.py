@@ -13,6 +13,8 @@ FILE_PATH = BASE_DIR / "Active_alarms.json"
 class User_alarms():
     def __init__(self, logger_func):
         self.event_logger = logger_func #This attribute makes main and configurations talk with eachother
+        self.triggered_alarms = {}
+
 
     def show_config_alarm_menu(self):
         self.event_logger(log="Alarm-menu opened")
@@ -22,7 +24,10 @@ class User_alarms():
                   "2. Show active alarms\n",
                   "3. Remove alarm\n",
                   "4. Return\n")
+        try:          
             menu_choice = input("Please choose an option from 1-4: ")
+        except KeyboardInterrupt:
+            print("Press 4 to exit to main menu")
 
             if menu_choice == '1':
                 self.add_new_alarm()
@@ -41,7 +46,6 @@ class User_alarms():
             else:
                 print(Fore.RED + "Please enter a valid choice from 1-4: ")
                 self.event_logger(log="User entered wrong input choice in alarm-menu")
-
     def _load_alarms(self):
         try:
             with open(FILE_PATH, "r") as file:
@@ -57,7 +61,11 @@ class User_alarms():
     def add_new_alarm(self):
         name_choice = ""
         while name_choice not in ["cpu", "ram", "disk"]:
-            name_choice = input("Choose where to put the new alarm (cpu/ram/disk): ").lower()
+            try:
+                name_choice = input("Choose where to put the new alarm (cpu/ram/disk): ").lower()
+            except KeyboardInterrupt:
+                self.event_logger(log="User cancelled the new-alarm operation.")
+                return
             if name_choice not in ["cpu", "ram", "disk"]:
                 print("Please enter one of the following: cpu, ram, disk")
         name = name_choice.upper()
@@ -70,6 +78,9 @@ class User_alarms():
                     print(Fore.RED + "Value must be between 1 and 100.")
             except ValueError:
                 print(Fore.RED + "Please enter a number from 1-100.")
+            except KeyboardInterrupt:
+                    self.event_logger(log="User aborted choose-value in add-new-alarm.")
+                    return
 
         all_alarms = self._load_alarms()
         new_alarm = {"Name": name, "Threshold": set_threshold}
@@ -85,7 +96,7 @@ class User_alarms():
             print(Fore.YELLOW + "No active alarms found.")
             return
         # Sort the list of alarms alphabetically by the 'Name' key
-        sorted_alarms = sorted(alarms, key=lambda alarm: alarm['Name'])
+        sorted_alarms = sorted(alarms, key=lambda alarm: (alarm['Name'], alarm['Threshold']))
 
         # Iterate over the newly sorted list
         for alarm in sorted_alarms:
@@ -113,23 +124,36 @@ class User_alarms():
             print(Fore.RED + "Only numbers please.")
             self.event_logger(log="User entered invalid value in remove-alarms function")
 
+        except KeyboardInterrupt:
+            self.event_logger(log="Remove alarms cancelled by user")
+            return
+
     def check_alarms(self, cpu_val, ram_val, disk_val):
         """This function checks current values against saved alarms."""
+
+        current_values = {
+            "CPU":cpu_val,
+            "RAM": ram_val,
+            "DISK": disk_val
+        }
+
         active_alarms = self._load_alarms()
         for alarm in active_alarms:
             value_to_check = 0
             name = alarm["Name"]
             threshold = alarm["Threshold"]
 
-            if name == "CPU":
-                value_to_check = cpu_val
-            elif name == "RAM":
-                value_to_check = ram_val
-            elif name == "DISK":
-                value_to_check = disk_val
-            if value_to_check >= threshold:
-                time.sleep(3)
-                # Print the warning on a new line to not interfere with the monitoring line
+            value_to_check = current_values.get(name, [0])
+            is_triggered = self.triggered_alarms.get(name, False)
 
-                print("\n" + Fore.RED + f"!!! ALARM !!! {name} ({value_to_check:.1f}%) has exceeded the threshold of {threshold}%")
-                self.event_logger(log=f"Alarm triggered for {name} at {threshold}%")
+            if value_to_check >= threshold:
+                if not is_triggered:
+                    print("\n" + Fore.RED + f"!!! ALARM !!! {name} ({value_to_check:.1f}%) has exceeded the threshold of {threshold}%")
+                    self.event_logger(log=f"Alarm triggered for {name} at {threshold}%")
+                    self.triggered_alarms[name] = True
+
+            else:
+                if is_triggered:
+                    print("\n" + Fore.GREEN + f"--- RECOVERY --- {name} ({value_to_check:.1f}%) is back below the threshold.")
+                    self.event_logger(log=f"Alarm recovery for {name}")
+                    self.triggered_alarms[name] = False

@@ -50,6 +50,7 @@ class Main():
             print(Fore.YELLOW + "Monitoring is not active.")
             return
         self.monitoring_active = False
+        self.user_alarms.triggered_alarms.clear()
         print(Fore.RED + "Monitoring stopped (System is DISARMED).")
         self.event_logger("Monitoring disarmed")
 
@@ -95,24 +96,27 @@ class Main():
                   "3. Show Live Monitoring & Alarms\n", 
                   "4. Alarm Configuration\n",
                   "5. Exit")
-            menu_choice = input(Fore.CYAN + "Please enter a choice from 1-5: ")
+            try:
+                menu_choice = input(Fore.CYAN + "Please enter a choice from 1-5: ")
 
-            if menu_choice == "1":
-                self.start_monitoring()
-            elif menu_choice == "2":
-                self.stop_monitoring()
-            elif menu_choice == "3":
-                self.show_live_overview() 
-            elif menu_choice == "4":
-                self.user_alarms.show_config_alarm_menu()
-            elif menu_choice == "5":
-                print("Shutting down...")
-                self.event_logger(log="User chose main-menu choice EXIT")
-                break
-            else:
-                print(Fore.RED + "Please enter a valid menu choice number from 1-5.")
-                self.event_logger(log="User entered the wrong input on main-menu")
-
+                if menu_choice == "1":
+                    self.start_monitoring()
+                elif menu_choice == "2":
+                    self.stop_monitoring()
+                elif menu_choice == "3":
+                    self.show_live_overview() 
+                elif menu_choice == "4":
+                    self.user_alarms.show_config_alarm_menu()
+                elif menu_choice == "5":
+                    print("Shutting down...")
+                    self.event_logger(log="User chose main-menu choice EXIT")
+                    break
+                else:
+                    print(Fore.RED + "Please enter a valid menu choice number from 1-5.")
+                    self.event_logger(log="User entered the wrong input on main-menu")
+            except KeyboardInterrupt:
+                    print("To exit press 5")
+            
 if __name__ == "__main__":
     run = Main()
     run.show_main_menu() #Startcommand, call for the menu method in the Main-class
